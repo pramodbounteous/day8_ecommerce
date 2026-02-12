@@ -1,37 +1,59 @@
-import type { Product } from "../api/productApi";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
+import { useAuth } from "../context/AuthContext";
 
-interface Props {
-  product: Product;
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
 }
 
-export const ProductCard = ({ product }: Props) => {
+const ProductCard = ({ product }: { product: Product }) => {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isAuthenticated } = useAuth();
+
+  const inWishlist = isInWishlist(product.id);
+
+  const handleWishlist = () => {
+    if (!isAuthenticated) {
+      alert("Please login to use wishlist");
+      return;
+    }
+
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
 
   return (
-    <div className="border rounded p-4 flex flex-col">
-      <img
-        src={product.image}
-        alt={product.title}
-        className="h-48 object-contain mb-4"
-      />
-      <h2 className="font-bold text-lg">{product.title}</h2>
-      <p className="text-gray-500">${product.price}</p>
-      <div className="mt-auto flex flex-col gap-2">
-        <Link
-          to={`/products/${product.id}`}
-          className="bg-blue-500 text-white py-1 px-3 rounded text-center"
-        >
-          View Details
-        </Link>
-        <button
-          onClick={() => addToCart(product)}
-          className="bg-green-600 text-white py-1 px-3 rounded"
-        >
-          Add to Cart
-        </button>
-      </div>
+    <div className="border p-4 rounded shadow relative">
+      <button
+        onClick={handleWishlist}
+        className="absolute top-2 right-2 text-xl"
+      >
+        {inWishlist ? "❤️" : "🤍"}
+      </button>
+
+      <Link to={`/product/${product.id}`}>
+        <img src={product.image} alt={product.title} className="h-40 mx-auto" />
+        <h3 className="mt-2 font-semibold">{product.title}</h3>
+      </Link>
+
+      <p className="font-bold mt-2">${product.price}</p>
+
+      <button
+        onClick={() => addToCart(product)}
+        className="bg-black text-white px-3 py-1 mt-2 rounded w-full"
+      >
+        Add to Cart
+      </button>
     </div>
   );
 };
+
+export default ProductCard;

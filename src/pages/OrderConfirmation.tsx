@@ -1,42 +1,36 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import React from "react";
+import { useLocation } from "react-router-dom";
 
-export const OrderConfirmation = () => {
+const OrderConfirmation = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const order = location.state;
+  const { order } = location.state || {};
 
-  useEffect(() => {
-    if (!order) {
-      navigate("/");
-    }
-  }, [order, navigate]);
-
-  if (!order) return null;
+  if (!order) {
+    return <p className="p-6 text-center">No order found.</p>;
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Order Confirmed 🎉</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Order Confirmed!</h1>
+      <p className="mb-2">Order ID: {order.id}</p>
+      <p className="mb-2">Payment Method: {order.paymentMethod}</p>
+      <p className="mb-4">Total Amount: ${order.totalAmount.toFixed(2)}</p>
 
-      <p className="mb-4">Order ID: {order.orderId}</p>
-
-      <div className="mb-4">
+      <h2 className="text-xl font-bold mb-2">Products:</h2>
+      <ul className="mb-4">
         {order.products.map((item: any) => (
-          <div key={item.id} className="flex justify-between border-b py-2">
-            <span>{item.title} (x{item.quantity})</span>
-            <span>${(item.price * item.quantity).toFixed(2)}</span>
-          </div>
+          <li key={item.id}>
+            {item.title} x {item.quantity} = ${(item.price * item.quantity).toFixed(2)}
+          </li>
         ))}
-      </div>
+      </ul>
 
-      <h2 className="font-bold">Total: ${order.totalAmount.toFixed(2)}</h2>
-
-      <button
-        onClick={() => navigate("/")}
-        className="mt-6 bg-blue-600 text-white px-6 py-3 rounded"
-      >
-        Back to Home
-      </button>
+      <h2 className="text-xl font-bold mb-2">Shipping Address:</h2>
+      <p>{order.shippingAddress.fullName}</p>
+      <p>{order.shippingAddress.address}, {order.shippingAddress.city}</p>
+      <p>{order.shippingAddress.state} - {order.shippingAddress.pincode}</p>
     </div>
   );
 };
+
+export default OrderConfirmation;

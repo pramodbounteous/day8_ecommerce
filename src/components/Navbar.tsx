@@ -1,33 +1,47 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
-export const Navbar = () => {
-  const { cartItems } = useCart();
+const Navbar = () => {
+  // Provide default empty array just in case
+  const { cartItems = [] } = useCart();
+  const { isAuthenticated, logout } = useAuth();
 
-  const totalQuantity = cartItems.reduce(
-    (acc, item) => acc + item.quantity,
-    0
-  );
+  // Safe total calculation
+  const totalItems = cartItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
 
   return (
     <nav className="bg-gray-800 text-white p-4 flex justify-between items-center">
-      <Link to="/" className="font-bold text-xl">
+      <Link to="/" className="text-2xl font-bold">
         MyStore
       </Link>
 
-      <div className="space-x-4 flex items-center">
-        <Link to="/">Home</Link>
+      <div className="flex items-center gap-6">
         <Link to="/products">Products</Link>
-        <Link to="/orders">Orders</Link>
-        <Link to="/cart" className="relative">
-          Cart
-          {totalQuantity > 0 && (
-            <span className="absolute -top-2 -right-3 bg-red-600 rounded-full text-xs w-5 h-5 flex items-center justify-center">
-              {totalQuantity}
-            </span>
-          )}
-        </Link>
+        <Link to="/cart">Cart ({totalItems})</Link>
+
+        {isAuthenticated ? (
+          <>
+            <Link to="/wishlist">Wishlist</Link>
+            <button
+              onClick={logout}
+              className="bg-red-500 px-3 py-1 rounded hover:bg-red-600"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <Link
+            to="/login"
+            className="bg-blue-500 px-3 py-1 rounded hover:bg-blue-600"
+          >
+            Login
+          </Link>
+        )}
       </div>
     </nav>
   );
 };
+
+export default Navbar;

@@ -1,7 +1,7 @@
 import { Carousel } from "../components/Carousel";
 import { Link } from "react-router-dom";
 
-export const Home = () => {
+const Home = () => {
   return (
     <div className="space-y-8">
       <Carousel />
@@ -15,3 +15,5 @@ export const Home = () => {
     </div>
   );
 };
+export default Home;
+
