@@ -1,12 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useCart } from "./CartContext";
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-}
+import type { Product } from "../api/productApi";
 
 interface WishlistContextType {
   wishlist: Product[];
