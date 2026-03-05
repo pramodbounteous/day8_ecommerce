@@ -19,7 +19,7 @@ const Wishlist = () => {
         {wishlist.map((item) => (
           <div key={item.id} className="border p-4 rounded shadow">
             <img
-              src={item.image}
+              src={item.productImg}
               alt={item.title}
               className="h-40 mx-auto"
             />

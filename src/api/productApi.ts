@@ -1,22 +1,23 @@
 import axios from "axios";
 
 export interface Product {
-  id: number;
+  id: string;
   title: string;
-  price: number;
   description: string;
-  category: string;
-  image: string;
+  productImg: string;
+  price: number;
 }
 
-const API_URL = "https://fakestoreapi.com/products";
+const API = axios.create({
+  baseURL: "https://ecommerce-prisma2.onrender.com"
+});
 
 export const fetchProducts = async (): Promise<Product[]> => {
-  const res = await axios.get(API_URL);
+  const res = await API.get("/products");
   return res.data;
 };
 
-export const fetchProductById = async (id: number): Promise<Product> => {
-  const res = await axios.get(`${API_URL}/${id}`);
+export const fetchProductById = async (id: string): Promise<Product> => {
+  const res = await API.get(`/products/${id}`);
   return res.data;
 };

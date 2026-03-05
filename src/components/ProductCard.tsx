@@ -34,7 +34,7 @@ const ProductCard = ({ product }: { product: Product }) => {
       </button>
 
       <Link to={`/product/${product.id}`}>
-        <img src={product.image} alt={product.title} className="h-40 mx-auto" />
+        <img src={product.productImg} alt={product.title} className="h-40 mx-auto" />
         <h3 className="mt-2 font-semibold">{product.title}</h3>
       </Link>
 

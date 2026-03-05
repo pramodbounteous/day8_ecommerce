@@ -1,45 +1,41 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Product } from "../api/productApi";
 
-// Extend Product to include quantity
 interface CartItem extends Product {
   quantity: number;
 }
 
-// Define the context type
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (product: Product) => void;
-  removeFromCart: (productId: number) => void;
-  increaseQuantity: (productId: number) => void;
-  decreaseQuantity: (productId: number) => void;
+  removeFromCart: (productId: string) => void;
+  increaseQuantity: (productId: string) => void;
+  decreaseQuantity: (productId: string) => void;
   clearCart: () => void;
   totalAmount: number;
 }
 
-// Create the context
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// Provider component
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    // Load from localStorage if exists, otherwise default to empty array
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
   });
 
-  // Persist cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Add a product to cart
   const addToCart = (product: Product) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
+
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       } else {
         return [...prev, { ...product, quantity: 1 }];
@@ -47,22 +43,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // Remove a product from cart
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  // Increase quantity of a product
-  const increaseQuantity = (productId: number) => {
+  const increaseQuantity = (productId: string) => {
     setCartItems((prev) =>
       prev.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+        item.id === productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       )
     );
   };
 
-  // Decrease quantity of a product (min 1)
-  const decreaseQuantity = (productId: number) => {
+  const decreaseQuantity = (productId: string) => {
     setCartItems((prev) =>
       prev.map((item) => {
         if (item.id === productId) {
@@ -74,12 +69,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  // Clear entire cart
   const clearCart = () => {
     setCartItems([]);
   };
 
-  // Calculate total cart amount
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
@@ -102,7 +95,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Custom hook to use cart context
 export const useCart = (): CartContextType => {
   const context = useContext(CartContext);
   if (!context) {
